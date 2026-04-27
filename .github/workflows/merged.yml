@@ -1,51 +1,47 @@
-name: Incoming PR
-run-name: PR opened by ${{ github.actor }}
+name: PR Accepted Deployment
+run-name: PR from ${{ github.actor }} accepted - triggered a ${{ github.event_name }}
+ 
 on:
-  pull_request:
-    types: [opened, synchronize, reopened, ready_for_review]
-    branches: [main]
-
-permissions:
-  contents: read
-  id-token: write
-
+  push:
+    branches:
+      - main
+ 
 jobs:
-  run-snowflake-test-dbt-job:
-    name: "Run on Incoming PR"
+  deploy-prod:
     runs-on: ubuntu-latest
-    environment: prod # Must match the OIDC subject's environment
+    environment: prod
+ 
     env:
-      SNOWFLAKE_CLI_FEATURES_ENABLE_DBT: true
+      
+      
+ 
       SNOWFLAKE_ACCOUNT: ${{ secrets.PRD_ACCOUNT }}
-      # SNOWFLAKE_PASSWORD: ${{ secrets.SNOWFLAKE_PAT }} # Snowflake password is required if you aren't using OIDC
-      SNOWFLAKE_DATABASE: ${{ vars.SF_DB_NAME_SRC }}
-      SNOWFLAKE_SCHEMA: ${{ vars.SF_SCH_NAME_SRC }}
-
+      SNOWFLAKE_CONNECTIONS_DEFAULT_DATABASE: ${{vars.SF_DB_NAME_PRD}}
+      SNOWFLAKE_CONNECTIONS_DEFAULT_SCHEMA: ${{vars.SF_SCH_NAME_PRD}}
+ 
     steps:
-      # Check out repository code
-      # Gets the latest code from the incoming pull request
-      - name: Check out repository code
+      - name: Checkout repository
         uses: actions/checkout@v4
-
+ 
       - name: Install Snowflake CLI
         uses: snowflakedb/snowflake-cli-action@v2.0
-        with: # Ensures Snowflake CLI will search for OIDC users matching this subject
-          use-oidc: true
-
+ 
       - name: Check Snowflake CLI Version
         run: snow --version
-
-      # The -x is shorthand for --temporary-connection
-      - run: snow connection test -x
-
-      # The --force setting creates the object or updates it if it already exists
-      # You can remove the "--source" flag if your dbt_project.yml is at root of your repo
-      - name: Create a new tester dbt project object in ${{ vars.SF_DB_NAME_SRC }}.${{ vars.SF_SCH_NAME_SRC }}
-        run: snow dbt deploy dbt_tester --source ./dbt_27_Apr --dbt-version 1.10.15 --force -x
-
-      - name: List all of the snowflake dbt project objects in your account
-        run: snow dbt list -x
-
-      # Builds all models and runs tests in DAG order, failing early if any upstream test breaks
-      - name: Build and test dbt project in ${{ vars.SF_DB_NAME_SRC }}.${{ vars.SF_SCH_NAME_SRC }}
-        run: snow dbt execute -x dbt_tester build --target dev
+ 
+      - name: Test Snowflake Connection
+        run: snow connection test -x
+ 
+      - name: Deploy dbt project object to PROD
+        run: |
+              snow dbt deploy SNOWFLAKE_CONNECTIONS_DEFAULT_DATABASE.SNOWFLAKE_CONNECTIONS_DEFAULT_SCHEMA.dbt_prd \
+                 --source ./dbt_27_Apr \
+                --default-target prod \
+                --dbt-version 1.10.15 \
+                   --force \
+                     -x
+ 
+      - name: Run dbt project in PROD
+        run: |
+           snow dbt execute -x SNOWFLAKE_CONNECTIONS_DEFAULT_DATABASE.SNOWFLAKE_CONNECTIONS_DEFAULT_SCHEMA.dbt_prd build --target prod -x
+      #   run: snow sql -f ${{ github.workspace }}/tasty_bytes/schedules.sql 

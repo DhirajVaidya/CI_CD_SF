@@ -1,7 +1,7 @@
-name: dbt
+name: dbt_27_Apr
 version: 1.0.0
 config-version: 2
-profile: dbt
+profile: dbt_27_Apr
 model-paths:
   - models
 analysis-paths:
@@ -15,5 +15,5 @@ macro-paths:
 snapshot-paths:
   - snapshots
 models:
-  dbt:
+  dbt_27_Apr:
     +materialized: view

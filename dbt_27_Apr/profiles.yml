@@ -8,3 +8,10 @@ dbt_27_Apr:
       database: DBT_HOME
       schema: DBT_CI_CD
       threads: 8
+    prod:
+      type: snowflake
+      role: ACCOUNTADMIN
+      warehouse: COMPUTE_WH
+      database: DB_DBT_DESTI
+      schema: DBT_CI_CD_PRD
+      threads: 8

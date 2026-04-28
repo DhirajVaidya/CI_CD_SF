@@ -9,7 +9,9 @@
       union all
       select 3 as id 
       union all
-      select 4 as id 
+      select 4 as id
+      union all
+      select 5 as id 
   )
 
   select *

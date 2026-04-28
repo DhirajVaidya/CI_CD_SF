@@ -16,12 +16,9 @@ jobs:
     environment: prod
  
     env:
-      
-      
- 
       SNOWFLAKE_ACCOUNT: ${{ secrets.PRD_ACCOUNT }}
-      SNOWFLAKE_USER: ${{ secrets.USER_NAME }}
-      SNOWFLAKE_PASSWORD: ${{ secrets.PASSWORD }}
+      # SNOWFLAKE_USER: ${{ secrets.USER_NAME }}
+      # SNOWFLAKE_PASSWORD: ${{ secrets.PASSWORD }}
       SNOWFLAKE_CONNECTIONS_DEFAULT_DATABASE: ${{vars.SF_DB_NAME_PRD}}
       SNOWFLAKE_CONNECTIONS_DEFAULT_SCHEMA: ${{vars.SF_SCH_NAME_PRD}}
  
@@ -31,6 +28,8 @@ jobs:
  
       - name: Install Snowflake CLI
         uses: snowflakedb/snowflake-cli-action@v2.0
+        with: # Ensures Snowflake CLI will search for OIDC users matching this subject
+          use-oidc: true
  
       - name: Check Snowflake CLI Version
         run: snow --version

@@ -40,7 +40,7 @@ jobs:
  
       - name: Deploy dbt project object to PROD
         run: |
-              snow dbt deploy SNOWFLAKE_CONNECTIONS_DEFAULT_DATABASE.SNOWFLAKE_CONNECTIONS_DEFAULT_SCHEMA.dbt_prd \
+              snow dbt deploy DB_DBT_DESTI.DBT_CI_CD_PRD.dbt_prd \
                  --source ./dbt_27_Apr \
                 --default-target prod \
                 --dbt-version 1.10.15 \
@@ -49,5 +49,5 @@ jobs:
  
       - name: Run dbt project in PROD
         run: |
-           snow dbt execute -x SNOWFLAKE_CONNECTIONS_DEFAULT_DATABASE.SNOWFLAKE_CONNECTIONS_DEFAULT_SCHEMA.dbt_prd build --target prod -x
+           snow dbt execute -x DB_DBT_DESTI.DBT_CI_CD_PRD.dbt_prd build --target prod -x
       #   run: snow sql -f ${{ github.workspace }}/tasty_bytes/schedules.sql 

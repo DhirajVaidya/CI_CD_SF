@@ -1,17 +1,17 @@
 {{ config(materialized='table') }}
 
   with source_data as (
-      select 1 as id
+      select 11 as id
       union all
-      select 2 as id 
+      select 22 as id 
       union all
-      select 3 as id 
+      select 33 as id 
       union all
-      select 4 as id
+      select 44 as id
       union all
-      select 5 as id 
+      select 55 as id 
       union all
-      select 6 as id 
+      select 66 as id 
   )
 
   select *

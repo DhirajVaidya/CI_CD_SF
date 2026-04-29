@@ -1,4 +1,4 @@
-name: PR Accepted Deployment
+name: Manually run
 run-name: PR from ${{ github.actor }} accepted - triggered a ${{ github.event_name }}
  
 on:

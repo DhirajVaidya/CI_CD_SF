@@ -12,6 +12,8 @@
       select 55 as id 
       union all
       select 66 as id 
+      union all
+      select 77 as id 
   )
 
   select *

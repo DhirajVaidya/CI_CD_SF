@@ -18,6 +18,8 @@
       select 88 as id 
       union all
       select 99 as id 
+      union all
+      select 999 as id
   )
 
   select *
